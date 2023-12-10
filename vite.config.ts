@@ -9,6 +9,7 @@ import IconsResolver from 'unplugin-icons/resolver'
 import Components from 'unplugin-vue-components/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import UnoCSS from 'unocss/vite'
+import VueMacros from 'unplugin-vue-macros/vite'
 import { isDev, port, r } from './scripts/utils'
 import packageJson from './package.json'
 
@@ -24,7 +25,12 @@ export const sharedConfig: UserConfig = {
     __NAME__: JSON.stringify(packageJson.name),
   },
   plugins: [
-    Vue(),
+    VueMacros({
+      plugins: {
+        vue: Vue(),
+        // vueJsx: VueJsx(),
+      },
+    }),
 
     AutoImport({
       imports: [
@@ -34,8 +40,14 @@ export const sharedConfig: UserConfig = {
             ['*', 'browser'],
           ],
         },
+        {
+          consola: ['consola'],
+        },
       ],
       dts: r('src/auto-imports.d.ts'),
+      dirs: [
+        '~/src/components/*.vue',
+      ],
     }),
 
     // https://github.com/antfu/unplugin-vue-components

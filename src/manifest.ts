@@ -8,7 +8,9 @@ export async function getManifest() {
 
   // update this file to update this manifest.json
   // can also be conditional based on your need
-  const manifest: Manifest.WebExtensionManifest = {
+  const manifest: Manifest.WebExtensionManifest & {
+    oauth2: any
+  } = {
     manifest_version: 3,
     name: pkg.displayName || pkg.name,
     version: pkg.version,
@@ -38,7 +40,13 @@ export async function getManifest() {
       'tabs',
       'storage',
       'activeTab',
+      'bookmarks',
+      'identity',
     ],
+    oauth2: {
+      client_id: '<client ID>',
+      scopes: ['openid', 'email', 'profile'],
+    },
     host_permissions: ['*://*/*'],
     content_scripts: [
       {
@@ -62,15 +70,6 @@ export async function getManifest() {
         ? `script-src \'self\' http://localhost:${port}; object-src \'self\'`
         : 'script-src \'self\'; object-src \'self\'',
     },
-  }
-
-  // FIXME: not work in MV3
-  if (isDev && false) {
-    // for content script, as browsers will cache them for each reload,
-    // we use a background script to always inject the latest version
-    // see src/background/contentScriptHMR.ts
-    delete manifest.content_scripts
-    manifest.permissions?.push('webNavigation')
   }
 
   return manifest
